@@ -13,7 +13,10 @@ const config = require('./config')
 
 const app = express();
 
+// connect to mongodb
+mongoose.Promise = global.Promise; // use ES6 Promise implementation
 mongoose.connect(config.database);
+
 
 // config
 app.set('secret', config.secret);
