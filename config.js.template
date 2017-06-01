@@ -1,0 +1,4 @@
+module.exports = {
+    'secret': '$€CR€7',
+    'database': 'mongodb://dbuser:dbpassword@hostname:port/dbname',
+}
