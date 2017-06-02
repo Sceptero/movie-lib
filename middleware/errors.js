@@ -1,32 +1,37 @@
+const ApiError = require('../api/ApiError');
+
 module.exports = (app) => {
-  // api error handler - mongo
+  // handle mongo errors and pass to next handler
   app.use('/api', (err, req, res, next) => {
     if (err.name !== 'MongoError') return next(err);
+    
+    let apiError;
 
     switch (err.code) {
       case 11000:
-        res.json(409, { message: 'Already Exists' });
+        apiError = new ApiError(409, 'Already Exists');
         break;
       default:
-        console.error(`Unhandled error: ${err.message}`);
-        res.json(500, { message: 'Internal Server Error' });
+        return next(err);
     }
+
+    next(apiError);
   });
 
-  // api error handler - mongoose
+  // handle mongoose errors and pass to next handler
   app.use('/api', (err, req, res, next) => {
     if (err.name !== 'ValidationError') return next(err);
 
-    res.json(400, { message: 'Input Validation Error' });
+    return next(new ApiError(400, 'Input Validation Error'));
   });
 
   // api error handler - unhandled
   app.use('/api', (err, req, res, next) => {
-    if (err.message) {
-      res.json(400, { message: err.message });
+    if (err instanceof ApiError) {
+      res.status(err.status).json({ message: err.message });
     } else {
       console.error(`Unhandled error: ${err.message}`);
-      res.json(500, { message: 'Internal Server Error' });
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   });
 
@@ -49,7 +54,7 @@ module.exports = (app) => {
     if (req.accepts('html')) {
       res.render('error');
     } else {
-      res.json(err.status, { message: err.message });
+      res.status(err.status).json({ message: err.message });
     }
   });
 };
