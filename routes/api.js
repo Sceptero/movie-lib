@@ -1,12 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const jwtAuth = require('express-jwt');
 
 const router = express.Router();
 
 const User = require('../api/models/user');
 const ApiError = require('../api/ApiError');
+const jwtAuth = require('../middleware/jwt');
 
 // user registration
 router.post('/users', async (req, res, next) => {
@@ -29,10 +29,10 @@ router.post('/users', async (req, res, next) => {
 });
 
 // user deletion
-router.delete('/users/:id', jwtAuth({ secret: 'test' }), async (req, res, next) => {
+router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   try {
     // only logged in user can remove his account
-    if (req.params.id !== req.user.id) return next(new ApiError(401, 'Unathorized'));
+    if (req.params.id !== req.user._doc._id) return next(new ApiError(403, 'Unathorized'));
 
     const user = await User.findById(req.params.id);
 
