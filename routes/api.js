@@ -9,6 +9,30 @@ const ApiError = require('../api/ApiError');
 const jwtAuth = require('../middleware/jwt');
 
 /**
+ * Token generation.
+ */
+router.post('/auth', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ login: req.body.login });
+
+    // user not found
+    if (!user) {
+      return next(new ApiError((401, 'Bad Credentials')));
+    }
+
+    // invalid password
+    if (!bcrypt.compareSync(req.body.password, user.password)) {
+      return next(new ApiError((401, 'Bad Credentials')));
+    }
+
+    const token = jwt.sign({ id: user.id }, req.app.get('secret'), { expiresIn: '7d' });
+    res.status(200).json({ message: 'Ok', token });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
  * User registration.
  */
 router.post('/users', async (req, res, next) => {
@@ -32,11 +56,13 @@ router.post('/users', async (req, res, next) => {
 
 /**
  * User deletion.
+ *
+ * Requires authentication.
  */
 router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   try {
-    // only logged in user can remove his account
-    if (req.params.id !== req.user._id) return next(new ApiError(403, 'Unathorized'));
+    // users can delete only their own account
+    if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
 
     const user = await User.findById(req.params.id);
 
@@ -48,31 +74,6 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
     return next(err);
   }
 });
-
-/**
- * Token generation.
- */
-router.post('/auth', async (req, res, next) => {
-  try {
-    const user = await User.findOne({ login: req.body.login });
-
-    // user not found
-    if (!user) {
-      return next(new ApiError((401, 'Bad Credentials')));
-    }
-
-    // invalid password
-    if (!bcrypt.compareSync(req.body.password, user.password)) {
-      return next(new ApiError((401, 'Bad Credentials')));
-    }
-
-    const token = jwt.sign(user.toObject(), req.app.get('secret'), { expiresIn: '7d' });
-    res.status(200).json({ message: 'Ok', token });
-  } catch (err) {
-    return next(err);
-  }
-});
-
 
 // MOVIE
 
