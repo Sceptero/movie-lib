@@ -8,7 +8,9 @@ const User = require('../api/models/user');
 const ApiError = require('../api/ApiError');
 const jwtAuth = require('../middleware/jwt');
 
-// user registration
+/**
+ * User registration.
+ */
 router.post('/users', async (req, res, next) => {
   const login = req.body.login;
   const password = req.body.password;
@@ -28,11 +30,13 @@ router.post('/users', async (req, res, next) => {
   }
 });
 
-// user deletion
+/**
+ * User deletion.
+ */
 router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   try {
     // only logged in user can remove his account
-    if (req.params.id !== req.user._doc._id) return next(new ApiError(403, 'Unathorized'));
+    if (req.params.id !== req.user._id) return next(new ApiError(403, 'Unathorized'));
 
     const user = await User.findById(req.params.id);
 
@@ -45,7 +49,9 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   }
 });
 
-// AUTH
+/**
+ * Token generation.
+ */
 router.post('/auth', async (req, res, next) => {
   try {
     const user = await User.findOne({ login: req.body.login });
@@ -60,7 +66,7 @@ router.post('/auth', async (req, res, next) => {
       return next(new ApiError((401, 'Bad Credentials')));
     }
 
-    const token = jwt.sign(user, req.app.get('secret'), { expiresIn: '7d' });
+    const token = jwt.sign(user.toObject(), req.app.get('secret'), { expiresIn: '7d' });
     res.status(200).json({ message: 'Ok', token });
   } catch (err) {
     return next(err);

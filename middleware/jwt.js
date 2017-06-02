@@ -6,8 +6,8 @@ const ApiError = require('../api/ApiError');
 const router = express.Router();
 
 /**
- * validates jsonwebtoken passed in request body,
- * attaches decoded payload to request object
+ * Validates jsonwebtoken passed in request body,
+ * attaches decoded payload to request object.
  */
 router.use((req, res, next) => {
   const secret = req.app.get('secret');
