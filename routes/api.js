@@ -3,12 +3,14 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
-const User = require('./api/models/user');
+const User = require('../api/models/user');
 
 // user registration
-router.post('/users', async (req, res) => {
+router.post('/users', async (req, res, next) => {
   const login = req.body.login;
   const password = req.body.password;
+
+  if (!password) return next(new Error('Input Validation Error'));
 
   const newUser = new User({
     login,
@@ -17,19 +19,21 @@ router.post('/users', async (req, res) => {
 
   try {
     await newUser.save();
-    res.status(200);
-    res.json({ Result: 'Ok' });
+    res.json(200, { message: 'Ok' });
   } catch (err) {
-    switch (err.code) {
-      case 11000:
-        res.status(409);
-        res.json({ Result: 'Already Exists' });
-        break;
-      default:
-        console.error(`Unhandled error: ${err.message}`);
-        res.status(500);
-        res.json({ Result: 'Internal Server Erro' });
-    }
+    return next(err);
+  }
+});
+
+// user deletion
+router.delete('/users/:id', async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    await user.remove();
+    res.json(200, { message: 'Ok' });
+  } catch (err) {
+    return next(err);
   }
 });
 
