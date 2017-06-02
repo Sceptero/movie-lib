@@ -4,7 +4,7 @@ module.exports = (app) => {
   // handle mongo errors and pass to next handler
   app.use('/api', (err, req, res, next) => {
     if (err.name !== 'MongoError') return next(err);
-    
+
     let apiError;
 
     switch (err.code) {
