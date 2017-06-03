@@ -1,8 +1,10 @@
 const express = require('express');
 const session = require('express-session');
+const axios = require('axios');
 
 const loginRequired = require('../middleware/session');
 const config = require('../config');
+const categories = require('../api/categories');
 
 const router = express.Router();
 
@@ -15,8 +17,73 @@ router.use(session({
 /**
  * Get home page.
  */
-router.get('/', loginRequired, (req, res) => {
-  res.render('index', { title: 'Home', login: req.login });
+router.get('/', loginRequired, async (req, res, next) => {
+  try {
+    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies`, {
+      headers: {
+        Authorization: `Bearer ${req.session.user.token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    res.render('index', { title: 'Movie Library', login: req.login, movies: result.data });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Get new movie page.
+ */
+router.get('/add-movie', loginRequired, async (req, res, next) => {
+  res.render('addmovie', { title: 'Add Movie', login: req.login, categories });
+});
+
+/**
+ * New movie action.
+ */
+router.post('/add-movie', async (req, res, next) => {
+  try {
+    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${req.session.user.token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      data: {
+        title: req.body.title,
+        rating: req.body.rating,
+        director: req.body.director,
+        actors: req.body.actors,
+        category: req.body.category,
+      },
+    });
+
+    res.json({ message: 'Ok' });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Get single movie page.
+ */
+router.get('/movie/:id', loginRequired, async (req, res, next) => {
+  try {
+    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${req.session.user.token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    res.render('movie', { title: 'Edit Movie', login: req.login, movie: result.data });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 /**
@@ -26,6 +93,35 @@ router.get('/login', (req, res) => {
   if (req.session.user) res.redirect('/');
 
   res.render('login', { title: 'Login', login: req.login });
+});
+
+/**
+ * Login action.
+ */
+router.post('/login', async (req, res, next) => {
+  try {
+    const result = await axios('http://localhost:3000/api/auth', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      data: {
+        login: req.body.login,
+        password: req.body.password,
+      },
+    });
+
+    const sess = req.session;
+    sess.user = {};
+    sess.user.token = result.data.token;
+    sess.user.id = result.data.id;
+    sess.user.login = result.data.login;
+
+    res.json({ message: 'Ok' });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 
@@ -39,18 +135,28 @@ router.get('/register', (req, res) => {
 });
 
 /**
- * Login (create sesion).
+ * Register action.
  */
-router.post('/login', (req, res) => {
-  const sess = req.session;
+router.post('/register', async (req, res, next) => {
+  try {
+    const result = await axios('http://localhost:3000/api/users', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      data: {
+        login: req.body.login,
+        password: req.body.password,
+      },
+    });
 
-  sess.user = {};
-  sess.user.token = req.body.token;
-  sess.user.id = req.body.id;
-  sess.user.login = req.body.login;
-
-  res.json({ message: 'Ok' });
+    res.json({ message: 'Ok' });
+  } catch (err) {
+    return next(err);
+  }
 });
+
 
 /**
  * Logout (destroy session).

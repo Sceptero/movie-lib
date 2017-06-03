@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  h1= title
+
+  input(type="hidden", value=movie.id)#movieId
+
+  h3 Title
+  input(type="text", value=movie.title)#movieTitle
+
+  h3 Rating
+  select#movieRating
+    - for (let i = 1; i < 6; i++)
+      if i == movie.rating
+        option(value=i selected) #{i}
+      else
+        option(value=i) #{i}
+
+  h3 Director
+  input(type="text", value=movie.director)#movieDirector
+
+  h3 Actors
+  input(type="text", value=movie.actors)#movieActors
+
+  h3 Category
+  select#movieCategory
+    for cat in categories
+      if cat == movie.category
+        option(value=cat selected) #{cat}
+      else
+        option(value=cat) #{cat}
+  
+  div
+    button#updateMovie Update movie
+    button#removeMovie Remove movie

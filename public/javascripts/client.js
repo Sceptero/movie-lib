@@ -3,18 +3,17 @@ $(document).ready(() => {
   $('#registerButton').click(() => {
     const login = $('#loginInput').val();
     const password = $('#passwordInput').val();
-    
+
     $.ajax({
-      url: '/api/users',
+      url: '/register',
       method: 'POST',
       dataType: 'json',
-      data: { login: login, password: password },
-      success: (data, textStatus, jqXHR) => {
-        alert('Registered');
+      data: { login, password },
+      success: () => {
         window.location.replace('/login');
       },
-      error: (jqXHR, textStatus, errorThrown) => {
-        alert(jqXHR.responseJSON.message);
+      error: () => {
+        alert('registration error');
       },
     });
   });
@@ -25,32 +24,21 @@ $(document).ready(() => {
     const password = $('#passwordInput').val();
 
     $.ajax({
-      url: '/api/auth',
+      url: '/login',
       method: 'POST',
       dataType: 'json',
-      data: { login: login, password: password },
-      success: (data, textStatus, jqXHR) => {
-        console.log('sending internal req');
-        const recToken = data.token;
-        const recId = data.id;
-        const recLogin = data.login;
-
-        $.ajax({
-          url: '/login',
-          method: 'POST',
-          dataType: 'json',
-          data: { token: recToken, id: recId, login: recLogin },
-          success: () => {
-            window.location.replace('/');
-          },
-        });
+      data: { login, password },
+      success: () => {
+        window.location.replace('/');
       },
-      error: (jqXHR, textStatus, errorThrown) => {
-        alert(jqXHR.responseJSON.message);
+      error: () => {
+        alert('login error');
       },
     });
   });
 
+
+  // logout
   $('#logoutButton').click(() => {
     $.ajax({
       url: '/logout',
@@ -58,7 +46,31 @@ $(document).ready(() => {
       success: () => {
         window.location.replace('/login');
       },
+      error: () => {
+        alert('login error');
+      },
     });
   });
 
+  // add movie
+  $('#addMovieButton').click(() => {
+    const title = $('#movieTitle').val();
+    const rating = $('#movieRating').val();
+    const director = $('#movieDirector').val();
+    const actors = $('#movieActors').val();
+    const category = $('#movieCategory').val();
+
+    $.ajax({
+      url: '/add-movie',
+      method: 'POST',
+      dataType: 'json',
+      data: { title, rating, director, actors, category },
+      success: (data, textStatus, jqXHR) => {
+        window.location.replace('/');
+      },
+      error: (jqXHR, textStatus, errorThrown) => {
+        alert(jqXHR.responseJSON.message);
+      },
+    });
+  });
 });

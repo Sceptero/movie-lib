@@ -5,6 +5,7 @@ body {
 
 a {
   color: #00B7FF;
+  text-decoration: none;
 }
 
 input {
@@ -13,4 +14,27 @@ input {
 
 .top {
   float: right;
+}
+
+ul {
+  list-style-type: none;
+  width: 500px;
+}
+
+li {
+  padding: 5px 15px 5px 15px;
+  overflow: auto;
+  background-color: #AAAAFF;
+  border-radius: 5px;
+  margin: 10px 0px 10px 0px;
+  color: #111;
+}
+
+div {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+li p b {
+  color: #000;
 }

@@ -2,4 +2,20 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p This is your movie library! Click item to edit it.
+
+  ul
+    for movie in movies
+      a(href="#", itemid="#{movie._id}")#movieItem
+        li
+          p 
+            | <b>Title</b>: #{movie.title}  <b>Director</b>: #{movie.director} <br>
+            | <b>Category</b>: #{movie.category} <b>Actors</b>: #{movie.actors} <br>
+            | <b>Rating</b>: #{movie.rating}
+    else
+        li
+          p Your library is empty!
+  
+  div
+    a(href="/add-movie")
+      button Add new movie!
