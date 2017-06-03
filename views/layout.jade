@@ -1,7 +1,14 @@
 doctype html
 html
   head
-    title= title
+    title= "Movie-Lib - " + title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    if login
+      p.top Hello #{login}!  
+        a(href="#")#logoutButton [Logout]
+
     block content
+
+    script(type="text/javascript", src="javascripts/jquery-3.2.1.min.js")
+    script(type="text/javascript", src="javascripts/client.js")

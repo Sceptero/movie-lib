@@ -15,20 +15,20 @@ const jwtAuth = require('../middleware/jwt');
  */
 router.post('/auth', async (req, res, next) => {
   try {
-    const user = await User.findOne({ login: req.body.login });
+    const user = await User.findOne({ login: req.body.login.toLowerCase() });
 
     // user not found
     if (!user) {
-      return next(new ApiError((401, 'Bad Credentials')));
+      return next(new ApiError(401, 'Bad Credentials'));
     }
 
     // invalid password
     if (!bcrypt.compareSync(req.body.password, user.password)) {
-      return next(new ApiError((401, 'Bad Credentials')));
+      return next(new ApiError(401, 'Bad Credentials'));
     }
 
     const token = jwt.sign({ id: user.id }, req.app.get('secret'), { expiresIn: '7d' });
-    res.status(200).json({ message: 'Ok', token });
+    res.status(200).json({ message: 'Ok', id: user.id, token, login: user.login });
   } catch (err) {
     return next(err);
   }
@@ -38,7 +38,7 @@ router.post('/auth', async (req, res, next) => {
  * Register new user.
  */
 router.post('/users', async (req, res, next) => {
-  const login = req.body.login;
+  const login = req.body.login.toLowerCase();
   const password = req.body.password;
 
   if (!password) return next(new ApiError(400, 'Input Validation Error'));
