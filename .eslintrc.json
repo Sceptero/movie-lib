@@ -1,0 +1,21 @@
+{
+    "extends": "airbnb",
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": false
+        },
+        "sourceType": "module"
+    },
+    "rules": {
+        "consistent-return":"off",
+        "no-console": "off",
+        "no-unused-vars": "warn",
+        "no-underscore-dangle": "warn"
+    }
+}
