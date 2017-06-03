@@ -2,11 +2,17 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 
 const ApiError = require('../api/ApiError');
+const User = require('../api/models/user');
 
 const router = express.Router();
 
 /**
- * Validates jsonwebtoken passed in request body,
+ * Validates jsonwebtoken passed in request header.
+ * Header format:
+ *
+ * Key              Value
+ * Authorization    Bearer TOKEN
+ *
  * attaches decoded payload to request object.
  */
 router.use((req, res, next) => {
@@ -15,13 +21,29 @@ router.use((req, res, next) => {
     return next(new Error('secret not set'));
   }
 
-  const token = req.body.token;
-  if (!token) {
+  if (!(req.headers && req.headers.authorization)) {
     return next(new ApiError(401, 'Auth Error'));
+  }
+
+  const parts = req.headers.authorization.split(' ');
+  if (parts.length !== 2) {
+    return next(new ApiError(401, 'Auth Error'));
+  }
+
+  const scheme = parts[0];
+  const token = parts[1];
+  if (!/^Bearer$/i.test(scheme)) {
+    return next(new ApiError(401, 'Auth Error')); 
   }
 
   try {
     const decoded = jwt.verify(token, secret);
+
+    // make sure user exists
+    if (!User.findById(decoded.id)) {
+      return next(new ApiError(401, 'Auth Error'));
+    }
+
     req.user = decoded;
     next();
   } catch (err) {

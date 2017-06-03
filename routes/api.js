@@ -5,7 +5,9 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const User = require('../api/models/user');
+const Movie = require('../api/models/movie');
 const ApiError = require('../api/ApiError');
+const config = require('../config');
 const jwtAuth = require('../middleware/jwt');
 
 /**
@@ -75,6 +77,62 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   }
 });
 
-// MOVIE
+/**
+ * Add new movie to user's library
+ *
+ * Requires authentication.
+ */
+router.post('/users/:id/movies', jwtAuth, async (req, res, next) => {
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
 
+  try {
+    const user = await User.findById(req.params.id);
+    
+    const movie = new Movie({
+      title: req.body.title,
+      rating: 0,
+      director: req.body.director,
+      actors: req.body.actors,
+      category: req.body.category,
+    });
+
+    res.status(200).json({ message: 'Ok', id: movie.id });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Get all movies from user's library
+ *
+ * Requires authentication.
+ */
+router.get('/users/:id/movies', jwtAuth, async (req, res, next) => {
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    res.status(200).json(user.movies);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Get a movie from user's library
+ *
+ * Requires authentication.
+ */
+router.get('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    res.status(200).json(user.movies);
+  } catch (err) {
+    return next(err);
+  }
+});
 module.exports = router;

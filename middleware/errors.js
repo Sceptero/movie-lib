@@ -1,7 +1,8 @@
 const ApiError = require('../api/ApiError');
+const mongoose = require('mongoose');
 
 module.exports = (app) => {
-  // handle mongo errors and pass to next handler
+  // handle mongo errors
   app.use('/api', (err, req, res, next) => {
     if (err.name !== 'MongoError') return next(err);
 
@@ -18,14 +19,15 @@ module.exports = (app) => {
     next(apiError);
   });
 
-  // handle mongoose errors and pass to next handler
+  // handle mongoose errors
   app.use('/api', (err, req, res, next) => {
-    if (err.name !== 'ValidationError') return next(err);
+    if (err instanceof mongoose.CastError && err.path === '_id') return next(new ApiError(400, 'Invalid Id'));
+    else if (err instanceof mongoose.ValidationError) return next(new ApiError(400, 'Input Validation Error'));
 
-    return next(new ApiError(400, 'Input Validation Error'));
+    return next(err);
   });
 
-  // api error handler - unhandled
+  // send response
   app.use('/api', (err, req, res, next) => {
     if (err instanceof ApiError) {
       res.status(err.status).json({ message: err.message });
