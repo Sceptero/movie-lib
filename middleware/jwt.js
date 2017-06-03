@@ -15,7 +15,7 @@ const router = express.Router();
  *
  * attaches decoded payload to request object.
  */
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
   const secret = req.app.get('secret');
   if (!secret) {
     return next(new Error('secret not set'));
@@ -33,14 +33,15 @@ router.use((req, res, next) => {
   const scheme = parts[0];
   const token = parts[1];
   if (!/^Bearer$/i.test(scheme)) {
-    return next(new ApiError(401, 'Auth Error')); 
+    return next(new ApiError(401, 'Auth Error'));
   }
 
   try {
     const decoded = jwt.verify(token, secret);
 
     // make sure user exists
-    if (!User.findById(decoded.id)) {
+    const user = await User.findById(decoded.id);
+    if (!user) {
       return next(new ApiError(401, 'Auth Error'));
     }
 

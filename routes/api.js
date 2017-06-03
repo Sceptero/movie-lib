@@ -11,7 +11,7 @@ const config = require('../config');
 const jwtAuth = require('../middleware/jwt');
 
 /**
- * Token generation.
+ * Generate token.
  */
 router.post('/auth', async (req, res, next) => {
   try {
@@ -35,7 +35,7 @@ router.post('/auth', async (req, res, next) => {
 });
 
 /**
- * User registration.
+ * Register new user.
  */
 router.post('/users', async (req, res, next) => {
   const login = req.body.login;
@@ -57,7 +57,7 @@ router.post('/users', async (req, res, next) => {
 });
 
 /**
- * User deletion.
+ * Delete user.
  *
  * Requires authentication.
  */
@@ -72,7 +72,6 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
 
     res.status(204).json({});
   } catch (err) {
-    if (err.name === 'CastError') return next(new ApiError(400, 'Invalid Id'));
     return next(err);
   }
 });
@@ -87,14 +86,17 @@ router.post('/users/:id/movies', jwtAuth, async (req, res, next) => {
 
   try {
     const user = await User.findById(req.params.id);
-    
+
     const movie = new Movie({
       title: req.body.title,
-      rating: 0,
+      rating: req.body.rating || 0,
       director: req.body.director,
       actors: req.body.actors,
       category: req.body.category,
     });
+
+    user.movies.push(movie);
+    await user.save();
 
     res.status(200).json({ message: 'Ok', id: movie.id });
   } catch (err) {
@@ -130,9 +132,64 @@ router.get('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
-    res.status(200).json(user.movies);
+    const movie = await user.movies.id(req.params.movieid);
+    if (!movie) return next(new ApiError(400, 'Invalid Id'));
+
+    res.status(200).json(movie);
   } catch (err) {
     return next(err);
   }
 });
+
+/**
+ * Update a movie from user's library
+ *
+ * Requires authentication.
+ */
+router.patch('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    const movie = await user.movies.id(req.params.movieid);
+    if (!movie) return next(new ApiError(400, 'Invalid Id'));
+
+    if (req.body.title) movie.title = req.body.title;
+    if (req.body.rating) movie.rating = req.body.rating;
+    if (req.body.director) movie.director = req.body.director;
+    if (req.body.actors) movie.actors = req.body.actors;
+    if (req.body.category) movie.category = req.body.category;
+
+    await user.save();
+
+    res.status(200).json(movie);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Delete a movie from user's library
+ *
+ * Requires authentication.
+ */
+router.delete('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    const movie = await user.movies.id(req.params.movieid);
+    if (movie) {
+      await movie.remove();
+      await user.save();
+    }
+
+    res.status(204).json({});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
