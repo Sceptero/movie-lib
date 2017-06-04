@@ -15,4 +15,4 @@ Simple movie library api and web server.
 - mongoose
 - jsonwebtoken
 - axios
-- bcrypt
+- bcrypt-nodejs
