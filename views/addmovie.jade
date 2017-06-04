@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1= title
+
+  h3 Title
+  input(type="text")#movieTitle
+
+  h3 Rating
+  select#movieRating
+    - for (let i = 1; i < 6; i++)
+        option(value=i) #{i}
+
+  h3 Director
+  input(type="text")#movieDirector
+
+  h3 Actors
+  input(type="text")#movieActors
+
+  h3 Category
+  select#movieCategory
+    for cat in categories
+      option(value=cat) #{cat}
+  
+  div
+    button#addMovieButton Add movie
