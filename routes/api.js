@@ -7,7 +7,6 @@ const router = express.Router();
 const User = require('../api/models/user');
 const Movie = require('../api/models/movie');
 const ApiError = require('../api/ApiError');
-const config = require('../config');
 const jwtAuth = require('../middleware/jwt');
 
 /**

@@ -3,13 +3,12 @@ const session = require('express-session');
 const axios = require('axios');
 
 const loginRequired = require('../middleware/session');
-const config = require('../config');
 const categories = require('../api/categories');
 
 const router = express.Router();
 
 router.use(session({
-  secret: config.secret,
+  secret: process.env.MOVIE_LIB_SECRET,
   resave: false,
   saveUninitialized: false,
 }));

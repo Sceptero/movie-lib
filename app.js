@@ -9,16 +9,14 @@ const mongoose = require('mongoose');
 const client = require('./routes/client');
 const api = require('./routes/api');
 
-const config = require('./config');
-
 const app = express();
 
 // connect to mongodb
 mongoose.Promise = global.Promise; // use ES6 Promise implementation
-mongoose.connect(config.database);
+mongoose.connect(process.env.MOVIE_LIB_DB);
 
 // config
-app.set('secret', config.secret);
+app.set('secret', process.env.MOVIE_LIB_SECRET);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
