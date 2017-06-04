@@ -69,7 +69,44 @@ $(document).ready(() => {
         window.location.replace('/');
       },
       error: (jqXHR, textStatus, errorThrown) => {
-        alert(jqXHR.responseJSON.message);
+        alert('add movie error');
+      },
+    });
+  });
+
+  // add movie
+  $('#updateMovieButton').click(() => {
+    const title = $('#movieTitle').val();
+    const rating = $('#movieRating').val();
+    const director = $('#movieDirector').val();
+    const actors = $('#movieActors').val();
+    const category = $('#movieCategory').val();
+
+    $.ajax({
+      url: window.location.pathname,
+      method: 'PATCH',
+      dataType: 'json',
+      data: { title, rating, director, actors, category },
+      success: (data, textStatus, jqXHR) => {
+        window.location.replace('/');
+      },
+      error: (jqXHR, textStatus, errorThrown) => {
+        alert('update movie error');
+      },
+    });
+  });
+
+  // remove movie
+  $('#removeMovieButton').click(() => {
+    $.ajax({
+      url: window.location.pathname,
+      method: 'DELETE',
+      dataType: 'json',
+      success: (data, textStatus, jqXHR) => {
+        window.location.replace('/');
+      },
+      error: (jqXHR, textStatus, errorThrown) => {
+        alert('remove movie error');
       },
     });
   });

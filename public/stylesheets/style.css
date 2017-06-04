@@ -3,6 +3,11 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.content {
+  width: 900px;
+  margin: 0 auto;
+}
+
 a {
   color: #00B7FF;
   text-decoration: none;
@@ -18,7 +23,7 @@ input {
 
 ul {
   list-style-type: none;
-  width: 500px;
+  width: 600px;
 }
 
 li {

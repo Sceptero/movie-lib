@@ -2,11 +2,14 @@ extends layout
 
 block content
   h1= title
-  p This is your movie library! Click item to edit it.
+  p This is your movie library! <b>Click item to edit it</b>.
+  p Sort by: 
+    a(href="/?sort=category") [Category] 
+    a(href="/?sort=rating") [Rating] 
 
   ul
     for movie in movies
-      a(href="#", itemid="#{movie._id}")#movieItem
+      a(href="/movie/#{movie._id}")
         li
           p 
             | <b>Title</b>: #{movie.title}  <b>Director</b>: #{movie.director} <br>
@@ -18,4 +21,4 @@ block content
   
   div
     a(href="/add-movie")
-      button Add new movie!
+      button Add new movie

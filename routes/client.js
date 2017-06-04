@@ -27,7 +27,15 @@ router.get('/', loginRequired, async (req, res, next) => {
       },
     });
 
-    res.render('index', { title: 'Movie Library', login: req.login, movies: result.data });
+    const movies = result.data;
+
+    if (req.query.sort === 'category') {
+      movies.sort((a, b) => a.category > b.category);
+    } else if (req.query.sort === 'rating') {
+      movies.sort((a, b) => a.rating < b.rating);
+    }
+
+    res.render('index', { title: 'Movie Library', login: req.login, movies });
   } catch (err) {
     return next(err);
   }
@@ -43,7 +51,7 @@ router.get('/add-movie', loginRequired, async (req, res, next) => {
 /**
  * New movie action.
  */
-router.post('/add-movie', async (req, res, next) => {
+router.post('/add-movie', loginRequired, async (req, res, next) => {
   try {
     const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies`, {
       method: 'post',
@@ -56,7 +64,7 @@ router.post('/add-movie', async (req, res, next) => {
         title: req.body.title,
         rating: req.body.rating,
         director: req.body.director,
-        actors: req.body.actors,
+        actors: req.body.actors.split(',').map(x => x.trim()),
         category: req.body.category,
       },
     });
@@ -80,7 +88,54 @@ router.get('/movie/:id', loginRequired, async (req, res, next) => {
       },
     });
 
-    res.render('movie', { title: 'Edit Movie', login: req.login, movie: result.data });
+    res.render('movie', { title: 'Edit Movie', login: req.login, movie: result.data, categories });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Update movie action.
+ */
+router.patch('/movie/:id', loginRequired, async (req, res, next) => {
+  try {
+    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+      method: 'patch',
+      headers: {
+        Authorization: `Bearer ${req.session.user.token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      data: {
+        title: req.body.title,
+        rating: req.body.rating,
+        director: req.body.director,
+        actors: req.body.actors.split(',').map(x => x.trim()),
+        category: req.body.category,
+      },
+    });
+
+    res.json({ message: 'Ok' });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Remove movie action.
+ */
+router.delete('/movie/:id', loginRequired, async (req, res, next) => {
+  try {
+    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+      method: 'delete',
+      headers: {
+        Authorization: `Bearer ${req.session.user.token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    res.json({ message: 'Ok' });
   } catch (err) {
     return next(err);
   }
