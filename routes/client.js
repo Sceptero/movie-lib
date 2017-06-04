@@ -18,7 +18,7 @@ router.use(session({
  */
 router.get('/', loginRequired, async (req, res, next) => {
   try {
-    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies`, {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies`, {
       headers: {
         Authorization: `Bearer ${req.session.user.token}`,
         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ router.get('/add-movie', loginRequired, async (req, res, next) => {
  */
 router.post('/add-movie', loginRequired, async (req, res, next) => {
   try {
-    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies`, {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies`, {
       method: 'post',
       headers: {
         Authorization: `Bearer ${req.session.user.token}`,
@@ -79,7 +79,7 @@ router.post('/add-movie', loginRequired, async (req, res, next) => {
  */
 router.get('/movie/:id', loginRequired, async (req, res, next) => {
   try {
-    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies/${req.params.id}`, {
       headers: {
         Authorization: `Bearer ${req.session.user.token}`,
         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ router.get('/movie/:id', loginRequired, async (req, res, next) => {
  */
 router.patch('/movie/:id', loginRequired, async (req, res, next) => {
   try {
-    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies/${req.params.id}`, {
       method: 'patch',
       headers: {
         Authorization: `Bearer ${req.session.user.token}`,
@@ -125,7 +125,7 @@ router.patch('/movie/:id', loginRequired, async (req, res, next) => {
  */
 router.delete('/movie/:id', loginRequired, async (req, res, next) => {
   try {
-    const result = await axios(`http://localhost:3000/api/users/${req.session.user.id}/movies/${req.params.id}`, {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies/${req.params.id}`, {
       method: 'delete',
       headers: {
         Authorization: `Bearer ${req.session.user.token}`,
@@ -154,7 +154,7 @@ router.get('/login', (req, res) => {
  */
 router.post('/login', async (req, res, next) => {
   try {
-    const result = await axios('http://localhost:3000/api/auth', {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/auth`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ router.get('/register', (req, res) => {
  */
 router.post('/register', async (req, res, next) => {
   try {
-    const result = await axios('http://localhost:3000/api/users', {
+    const result = await axios(`http://localhost:${req.app.get('port')}/api/users`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
