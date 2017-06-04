@@ -42,12 +42,14 @@ router.post('/users', async (req, res, next) => {
 
   if (!password) return next(new ApiError(400, 'Input Validation Error'));
 
-  const newUser = new User({
-    login,
-    password: bcrypt.hashSync(password, 10),
-  });
+  
 
   try {
+    const newUser = new User({
+        login,
+        password: bcrypt.hashSync(password),
+      });
+
     const savedUser = await newUser.save();
     res.status(200).json({ message: 'Ok', id: savedUser.id });
   } catch (err) {
