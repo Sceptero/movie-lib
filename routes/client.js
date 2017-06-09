@@ -52,6 +52,8 @@ router.get('/add-movie', loginRequired, async (req, res, next) => {
  */
 router.post('/add-movie', loginRequired, async (req, res, next) => {
   try {
+    const actors = req.body.actors ? req.body.actors.split(',').map(x => x.trim()) : null;
+
     const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies`, {
       method: 'post',
       headers: {
@@ -60,11 +62,11 @@ router.post('/add-movie', loginRequired, async (req, res, next) => {
         Accept: 'application/json',
       },
       data: {
-        title: req.body.title,
-        rating: req.body.rating,
-        director: req.body.director,
-        actors: req.body.actors.split(',').map(x => x.trim()),
-        category: req.body.category,
+        title: req.body.title || null,
+        rating: req.body.rating || null,
+        director: req.body.director || null,
+        actors: actors || null,
+        category: req.body.category || null,
       },
     });
 
@@ -98,6 +100,8 @@ router.get('/movie/:id', loginRequired, async (req, res, next) => {
  */
 router.patch('/movie/:id', loginRequired, async (req, res, next) => {
   try {
+    const actors = req.body.actors ? req.body.actors.split(',').map(x => x.trim()) : null;
+
     const result = await axios(`http://localhost:${req.app.get('port')}/api/users/${req.session.user.id}/movies/${req.params.id}`, {
       method: 'patch',
       headers: {
@@ -106,11 +110,11 @@ router.patch('/movie/:id', loginRequired, async (req, res, next) => {
         Accept: 'application/json',
       },
       data: {
-        title: req.body.title,
-        rating: req.body.rating,
-        director: req.body.director,
-        actors: req.body.actors.split(',').map(x => x.trim()),
-        category: req.body.category,
+        title: req.body.title || null,
+        rating: req.body.rating || null,
+        director: req.body.director || null,
+        actors: actors || null,
+        category: req.body.category || null,
       },
     });
 
