@@ -42,16 +42,14 @@ router.post('/users', async (req, res, next) => {
 
   if (!password) return next(new ApiError(400, 'Input Validation Error'));
 
-  
-
   try {
     const newUser = new User({
-        login,
-        password: bcrypt.hashSync(password),
-      });
+      login,
+      password: bcrypt.hashSync(password),
+    });
 
-    const savedUser = await newUser.save();
-    res.status(200).json({ message: 'Ok', id: savedUser.id });
+    await newUser.save();
+    res.status(204).json();
   } catch (err) {
     return next(err);
   }
@@ -71,7 +69,7 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
 
     if (user) await user.remove();
 
-    res.status(204).json({});
+    res.status(204).json();
   } catch (err) {
     return next(err);
   }
@@ -99,7 +97,7 @@ router.post('/users/:id/movies', jwtAuth, async (req, res, next) => {
     user.movies.push(movie);
     await user.save();
 
-    res.status(200).json({ message: 'Ok', id: movie.id });
+    res.status(204).json();
   } catch (err) {
     return next(err);
   }
@@ -187,7 +185,7 @@ router.delete('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
       await user.save();
     }
 
-    res.status(204).json({});
+    res.status(204).json();
   } catch (err) {
     return next(err);
   }
