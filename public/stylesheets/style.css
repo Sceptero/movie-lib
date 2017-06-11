@@ -4,7 +4,7 @@ body {
 }
 
 .content {
-  width: 900px;
+  max-width: 900px;
   margin: 0 auto;
   border: 2px solid black;
   box-shadow: 0px 0px 10px 0px #404040;
@@ -23,7 +23,7 @@ a {
 
 ul {
   list-style-type: none;
-  width: 600px;
+  max-width: 600px;
 }
 
 li {
@@ -33,6 +33,11 @@ li {
   border-radius: 5px;
   margin: 10px 0px 10px 0px;
   color: #111;
+}
+
+li:hover {
+  box-shadow: inset 1px 1px 5px 0px #555;
+  background-color: #AAAAAA;
 }
 
 div {
