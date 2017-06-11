@@ -22,18 +22,18 @@ router.use(async (req, res, next) => {
   }
 
   if (!(req.headers && req.headers.authorization)) {
-    return next(new ApiError(401, 'Auth Error'));
+    return next(new ApiError(401, 'Auth Error: Missing header'));
   }
 
   const parts = req.headers.authorization.split(' ');
   if (parts.length !== 2) {
-    return next(new ApiError(401, 'Auth Error'));
+    return next(new ApiError(401, 'Auth Error: Invalid header'));
   }
 
   const scheme = parts[0];
   const token = parts[1];
   if (!/^Bearer$/i.test(scheme)) {
-    return next(new ApiError(401, 'Auth Error'));
+    return next(new ApiError(401, 'Auth Error: Invalid header'));
   }
 
   try {
@@ -42,7 +42,7 @@ router.use(async (req, res, next) => {
     // make sure user exists
     const user = await User.findById(decoded.id);
     if (!user) {
-      return next(new ApiError(401, 'Auth Error'));
+      return next(new ApiError(401, 'Auth Error: Invalid token'));
     }
 
     req.user = decoded;

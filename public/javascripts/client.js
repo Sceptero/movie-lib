@@ -47,7 +47,7 @@ $(document).ready(() => {
         window.location.replace('/login');
       },
       error: () => {
-        alert('login error');
+        alert('logout error');
       },
     });
   });

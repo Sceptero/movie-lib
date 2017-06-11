@@ -40,7 +40,7 @@ router.post('/users', async (req, res, next) => {
   const login = req.body.login.toLowerCase();
   const password = req.body.password;
 
-  if (!password) return next(new ApiError(400, 'Input Validation Error'));
+  if (!password) return next(new ApiError(400, 'Validation Error'));
 
   try {
     const newUser = new User({
@@ -63,7 +63,7 @@ router.post('/users', async (req, res, next) => {
 router.delete('/users/:id', jwtAuth, async (req, res, next) => {
   try {
     // users can delete only their own account
-    if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+    if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
     const user = await User.findById(req.params.id);
 
@@ -81,14 +81,14 @@ router.delete('/users/:id', jwtAuth, async (req, res, next) => {
  * Requires authentication.
  */
 router.post('/users/:id/movies', jwtAuth, async (req, res, next) => {
-  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
   try {
     const user = await User.findById(req.params.id);
 
     const movie = new Movie({
       title: req.body.title,
-      rating: req.body.rating || 0,
+      rating: req.body.rating || 1,
       director: req.body.director,
       actors: req.body.actors,
       category: req.body.category,
@@ -109,7 +109,7 @@ router.post('/users/:id/movies', jwtAuth, async (req, res, next) => {
  * Requires authentication.
  */
 router.get('/users/:id/movies', jwtAuth, async (req, res, next) => {
-  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
   try {
     const user = await User.findById(req.params.id);
@@ -126,7 +126,7 @@ router.get('/users/:id/movies', jwtAuth, async (req, res, next) => {
  * Requires authentication.
  */
 router.get('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
-  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
   try {
     const user = await User.findById(req.params.id);
@@ -146,7 +146,7 @@ router.get('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
  * Requires authentication.
  */
 router.patch('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
-  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
   try {
     const user = await User.findById(req.params.id);
@@ -174,7 +174,7 @@ router.patch('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
  * Requires authentication.
  */
 router.delete('/users/:id/movies/:movieid', jwtAuth, async (req, res, next) => {
-  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unathorized'));
+  if (req.params.id !== req.user.id) return next(new ApiError(403, 'Unauthorized'));
 
   try {
     const user = await User.findById(req.params.id);
