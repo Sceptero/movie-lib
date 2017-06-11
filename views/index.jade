@@ -4,8 +4,9 @@ block content
   h1= title
   p This is your movie library! <b>Click item to edit it</b>.
   p Sort by: 
-    a(href="/?sort=category") [Category] 
-    a(href="/?sort=rating") [Rating] 
+    a(href="/?sort=category") Category
+    |  | 
+    a(href="/?sort=rating") Rating
 
   ul
     for movie in movies

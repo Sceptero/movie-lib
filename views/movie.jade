@@ -21,6 +21,7 @@ block content
 
   h3 Actors
   input(type="text", value=movie.actors)#movieActors
+  i (separated with commas)
 
   h3 Category
   select#movieCategory
@@ -34,3 +35,6 @@ block content
     button#updateMovieButton Update movie
     =" "
     button#removeMovieButton Remove movie
+    =" "
+    a(href="/")
+      button Back

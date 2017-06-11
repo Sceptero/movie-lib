@@ -16,7 +16,8 @@ block content
 
   h3 Actors
   input(type="text")#movieActors
-
+  i  (separated with commas)
+  
   h3 Category
   select#movieCategory
     for cat in categories
@@ -24,3 +25,6 @@ block content
   
   div
     button#addMovieButton Add movie
+    =" "
+    a(href="/")
+      button Back
