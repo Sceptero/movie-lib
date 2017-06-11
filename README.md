@@ -3,8 +3,10 @@
 Simple movie library api and web server.
 
 ## Required Env Variables
-- `MOVIE_LIB_SECRET` - secret (ex. `k2lj4kl.$3CR37.2kl3j4`)
-- `MOVIE_LIB_DB` - MongoDB connection string (ex. `mongodb://dbuser:dbpassword@hostname:port/dbname`)
+Variable | Description | Example
+--- | --- | ---
+`MOVIE_LIB_SECRET` | App secret | `k2lj4kl.$3CR37.2kl3j4`
+`MOVIE_LIB_DB` | MongoDB connection string | `mongodb://dbuser:dbpassword@hostname:port/dbname`
 
 ## Technologies
 - Node.JS
